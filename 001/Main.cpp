@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
-#include<stdlib.h>
-void Animation(int);
+#include <stdlib.h>
+#include "Animation.h"
 int x;
 sf::RectangleShape player(sf::Vector2f(40.0f, 70.0f));
 sf::RenderWindow window(sf::VideoMode(800, 600), "Game01");
@@ -21,12 +21,7 @@ void delay(int number_of_seconds)
 
 void keyboardInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        x = 0;
-        Animation(x);
         player.move(-0.5f, 0.0f);
-        delay(1000);
-        x = 1;
-        Animation(x);
         printf("Keypress : A\n");
          
     }
@@ -46,9 +41,9 @@ void keyboardInput() {
         x = 4;
     }
 }
-void Animation(int z) {
+/*void Animation(int z) {
    /* sf::Texture playerTexture;
-    playerTexture.loadFromFile("player 2.png");*/
+    playerTexture.loadFromFile("player 2.png");
     player.setTexture(&playerTexture);
     sf::Vector2u textureSize = playerTexture.getSize();
     textureSize.x /= 4;
@@ -62,7 +57,7 @@ void Animation(int z) {
         player.setTextureRect(sf::IntRect(textureSize.x * 1, textureSize.y * 1, textureSize.x, textureSize.y));
         delay(5);
     }
-}
+}*/
 
 int main()
 {
@@ -70,25 +65,30 @@ int main()
     playerTexture.loadFromFile("player 2.png");
     sf::Vector2u textureSize = playerTexture.getSize();
     player.setTexture(&playerTexture);
-    textureSize.x /= 4;
+    Animation animation(&playerTexture, sf::Vector2u(4, 3), 0.3f);
+   /*textureSize.x /= 4;
     textureSize.y /= 3;
-    player.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y * 0, textureSize.x, textureSize.y));
+    player.setTextureRect(sf::IntRect(textureSize.x * 0, textureSize.y * 0, textureSize.x, textureSize.y));*/
+    float deltaTime = 0.0f;
+    sf::Clock clock;
    
     while (window.isOpen())
     {
-        bool w = true, a = true, s = true, d = true;
+        deltaTime = clock.restart().asSeconds();
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
         }
+        animation.Update(0, deltaTime);
+        player.setTextureRect(animation.uvRect);
         keyboardInput();
         window.clear();
         window.draw(player);
         window.display();
         
     }
-
+     
     return 0;
 }
